@@ -76,3 +76,43 @@ Follow these steps to run the project locally.
 ```bash
 git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
 cd YOUR_REPOSITORY
+
+2️⃣ Install dependencies
+composer install
+npm install
+
+3️⃣ Environment setup
+
+Copy the environment file:
+cp .env.example .env
+
+Generate the application key:
+
+php artisan key:generate
+
+4️⃣ Configure database
+
+Update your .env file with your database credentials:
+
+DB_DATABASE=your_db
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
+
+Run migrations:
+
+php artisan migrate
+
+5️⃣ Build frontend assets
+npm run build
+
+
+For development:
+
+npm run dev
+
+6️⃣ Start the server
+php artisan serve
+
+Visit:
+
+http://127.0.0.1:8000
