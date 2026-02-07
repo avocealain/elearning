@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-background text-secondary font-sans antialiased selection:bg-primary-100 selection:text-primary-900;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-bold tracking-tight text-secondary-900;
+    }
+
+    h1 {
+        @apply text-3xl sm:text-4xl lg:text-5xl mb-6 leading-tight;
+    }
+
+    h2 {
+        @apply text-2xl sm:text-3xl mb-4 leading-snug;
+    }
+
+    h3 {
+        @apply text-xl sm:text-2xl mb-3 leading-snug;
+    }
+
+    p {
+        @apply mb-4 leading-relaxed text-secondary-600 max-w-prose;
+    }
+}
+
+@layer components {
+    .btn {
+        @apply inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg font-medium text-sm tracking-wide transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm active:scale-95;
+    }
+    
+    .btn-primary {
+        @apply bg-primary text-white hover:bg-primary-700 focus:ring-primary-500;
+    }
+    
+    .btn-secondary {
+        @apply bg-white text-secondary border-gray-300 hover:bg-gray-50 focus:ring-secondary-500;
+    }
+    
+    .btn-accent {
+        @apply bg-accent text-white hover:bg-accent-600 focus:ring-accent-500;
+    }
+
+    .btn-ghost {
+        @apply bg-transparent text-secondary hover:bg-gray-100;
+    }
+
+    .btn-danger {
+        @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+    }
+
+    .card {
+        @apply bg-surface rounded-xl shadow-sm border border-gray-100 overflow-hidden;
+    }
+
+    .input {
+        @apply block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm;
+    }
+
+    .badge {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    }
+    
+    .badge-primary {
+        @apply bg-primary-100 text-primary-800;
+    }
+    
+    .badge-accent {
+        @apply bg-accent-100 text-accent-800;
+    }
+}
