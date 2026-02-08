@@ -49,9 +49,5 @@ RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# 13. Configuration du port dynamique pour Render
-# Render fournit la variable d'environnement PORT. Apache doit écouter dessus.
-RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
-
-# 14. Point d'entrée
+# 13. Point d'entrée
 ENTRYPOINT ["docker-entrypoint.sh"]
