@@ -1,6 +1,6 @@
 FROM php:8.2-cli
 
-# Installer dépendances système
+# dépendances système
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -8,16 +8,17 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     npm
 
-# Installer extensions PHP
+#  extensions PHP
 RUN docker-php-ext-install pdo pdo_pgsql
 
-# Installer Composer
+#  Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
 COPY . .
 
+RUN php artisan config:cache
 RUN composer install --no-dev --optimize-autoloader
 RUN npm install && npm run build
 
