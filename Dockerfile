@@ -1,32 +1,56 @@
-FROM php:8.2-cli
+FROM php:8.2-apache
 
-# Installer dépendances système
+# 1. Installer les dépendances système et Node.js
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libpq-dev \
-    nodejs \
-    npm
+    libonig-dev \
+    curl \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
 
-# Installer extensions PHP
-RUN docker-php-ext-install pdo pdo_pgsql
+# 2. Nettoyer le cache apt
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Installer Composer
+# 3. Installer les extensions PHP (PostgreSQL, BCMath, etc.)
+RUN docker-php-ext-install pdo_pgsql mbstring bcmath
+
+# 4. Configurer Apache pour Laravel
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
+
+# 5. Activer le mode Rewrite d'Apache
+RUN a2enmod rewrite
+
+# 6. Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /app
+# 7. Définir le répertoire de travail
+WORKDIR /var/www/html
 
+# 8. Copier les fichiers du projet
 COPY . .
 
+# 9. Installer les dépendances PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Frontend
+# 10. Installer les dépendances JS et compiler (Vite)
 RUN npm install
 RUN npm run build
 
-# Cache Laravel (maintenant possible)
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
+# 11. Ajuster les permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-CMD php -S 0.0.0.0:$PORT -t public
+# 12. Préparer le script de démarrage
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# 13. Configuration du port dynamique pour Render
+# Render fournit la variable d'environnement PORT. Apache doit écouter dessus.
+RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
+
+# 14. Point d'entrée
+ENTRYPOINT ["docker-entrypoint.sh"]
