@@ -8,6 +8,8 @@ use App\Models\Module;
 use App\Models\Lesson;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,6 +18,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+    
+        Schema::disableForeignKeyConstraints();
+        User::truncate(); 
+        Schema::enableForeignKeyConstraints();
+
         // 1. Admin User
         User::factory()->create([
             'name' => 'System Admin',
@@ -39,5 +46,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
             'role' => 'student',
         ]);
+        
+        // Optionnel : Si vous voulez aussi vider les cours, ajoutez Course::truncate(); en haut
     }
 }
