@@ -28,6 +28,10 @@ echo "🔧 Correction des permissions..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Démarrage du Worker de file d'attente en arrière-plan (Pour envoyer les emails sans bloquer)
+echo "🚀 Démarrage du Queue Worker..."
+php artisan queue:work --verbose --tries=3 --timeout=90 > /dev/stdout 2>&1 &
+
 # Démarrage du serveur PHP (via Apache dans le conteneur)
 echo "🚀 Démarrage du serveur..."
 exec docker-php-entrypoint apache2-foreground
