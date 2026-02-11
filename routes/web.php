@@ -53,8 +53,9 @@ Route::get('/design-system', function () {
     return Inertia::render('DesignSystem');
 })->name('design.system');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     // Student Dashboard (Default)
+    // Note: 'verified' removed to allow instant access significantly
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'student'])->name('dashboard');
 
     // Student Learning Routes
