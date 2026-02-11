@@ -3,34 +3,35 @@
 # Quitter en cas d'erreur
 set -e
 
+# Valeur par défaut pour PORT si non défini (Sécurité)
+PORT=${PORT:-80}
+
 # Configuration du port pour Render (Au démarrage)
-# On remplace le port 80 par la variable $PORT fournie par Render
 echo "🚀 Configuration du port Apache sur ${PORT}..."
-sed -i "s/80/${PORT}/g" /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
+# On force le Listen sur le bon port dans ports.conf
+echo "Listen ${PORT}" > /etc/apache2/ports.conf
+# On remplace le port dans le VirtualHost (plus robuste)
+sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/g" /etc/apache2/sites-available/000-default.conf
 
 # Exécuter les migrations de base de données
 echo "🚀 Exécution des migrations..."
 php artisan migrate --force
 
-# Mise en cache de la configuration et des routes
+# Mise en cache 
 echo "🚀 Mise en cache..."
-php artisan config:clear
-php artisan route:clear
 php artisan config:cache
-php artisan event:cache
 php artisan route:cache
 php artisan view:cache
 
-# Correction des permissions (CRUCIAL pour Render/Docker)
-# On s'assure que www-data (Apache) peut écrire dans les dossiers de cache et logs
-# même si ces fichiers ont été créés par root (via les commandes artisan ci-dessus)
+# Correction des permissions
 echo "🔧 Correction des permissions..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Démarrage du Worker de file d'attente en arrière-plan (Pour envoyer les emails sans bloquer)
+# Démarrage du Worker en arrière-plan
+# On utilise nohup pour s'assurer qu'il ne bloque pas le script
 echo "🚀 Démarrage du Queue Worker..."
-php artisan queue:work --verbose --tries=3 --timeout=90 > /dev/stdout 2>&1 &
+nohup php artisan queue:work --verbose --tries=3 --timeout=90 > /dev/stdout 2>&1 &
 
 # Démarrage du serveur PHP (via Apache dans le conteneur)
 echo "🚀 Démarrage du serveur..."
