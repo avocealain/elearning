@@ -32,10 +32,6 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 echo "🚀 Démarrage du Queue Worker..."
 php artisan queue:work --verbose --tries=3 --timeout=90 > /dev/stdout 2>&1 &
 
-# ONE-TIME SEED : RE-AJOUTÉ POUR CORRECTION
-echo "🌱 Seeding Database..."
-php artisan db:seed --force
-
 # Démarrage du serveur PHP (via Apache dans le conteneur)
 echo "🚀 Démarrage du serveur..."
 exec docker-php-entrypoint apache2-foreground
