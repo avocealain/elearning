@@ -13,9 +13,6 @@ use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
     
@@ -46,7 +43,6 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
             'role' => 'student',
         ]);
-        
-        // Optionnel : Si vous voulez aussi vider les cours, ajoutez Course::truncate(); en haut
+
     }
 }

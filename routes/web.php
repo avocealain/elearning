@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Artisan;
 
 Route::get('language/{locale}', function ($locale) {
     if (! in_array($locale, ['en', 'fr'])) {
@@ -112,3 +113,12 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+
+Route::get('/run-seeders', function () {
+    if (app()->environment('production')) {
+        Artisan::call('db:seed', ['--force' => true]);
+        return "Seeders exécutés avec succès en production.";
+    }
+    return "Action non autorisée en local.";
+});
